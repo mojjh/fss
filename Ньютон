@@ -1,0 +1,94 @@
+#include <iostream>
+#include <cmath>
+#include <iomanip>
+
+using namespace std;
+
+int function_calls = 0;
+
+// Исходная функция
+double func(double x) {
+    function_calls++;
+    return (1 - x * x) * (pow(x, 3) - 1);
+}
+
+// Первая производная
+double dfunc(double x) {
+    function_calls++;
+    return -2 * x * (pow(x, 3) - 1) + (1 - x * x) * (3 * x * x);
+}
+
+// Вторая производная
+double d2func(double x) {
+    function_calls++;
+    return -2 * (pow(x, 3) - 1) - 6 * x * x * x + 6 * x * (1 - x * x);
+}
+
+double newton_method(double x0, double epsilon, int max_iterations) {
+    double x = x0;
+    int iterations = 0;
+    function_calls = 0;
+
+    cout << "\nПоиск минимума функции f(x) = (1-x^2)(x^3-1)" << endl;
+    cout << "Метод Ньютона" << endl;
+    cout << "---------------------------------" << endl;
+    cout << "=== Параметры поиска ===" << endl;
+    cout << "Начальное приближение: x0 = " << fixed << setprecision(6) << x0 << endl;
+    cout << "Точность:              e = " << epsilon << endl;
+    cout << "Макс. итераций:        " << max_iterations << endl;
+    cout << "---------------------------------" << endl;
+
+    while (fabs(dfunc(x)) > epsilon && iterations < max_iterations) {
+        iterations++;
+
+        // Проверка на нулевую вторую производную
+        if (fabs(d2func(x)) < 1e-10) {
+            cout << "Ошибка: вторая производная близка к нулю" << endl;
+            return NAN;
+        }
+
+        x = x - dfunc(x) / d2func(x);
+
+        cout << "Итерация " << iterations << ":" << endl;
+        cout << "  Текущее приближение: x = " << setw(10) << x << endl;
+        cout << "  Производная:        f'(x) = " << setw(10) << dfunc(x) << endl;
+        cout << "  Вторая производная: f''(x) = " << setw(10) << d2func(x) << endl;
+        cout << "  -------------------------------" << endl;
+
+        // Проверка на минимум (вторая производная положительна)
+        if (d2func(x) <= 0) {
+            cout << "Предупреждение: найдена точка, не являющаяся минимумом (f''(x) <= 0)" << endl;
+        }
+    }
+
+    cout << "\n=== Результаты ===" << endl;
+    cout << "Всего итераций:     " << iterations << endl;
+    cout << "Вызовов функции:    " << function_calls << endl;
+    cout << "Найденная точка:    x = " << x << endl;
+    cout << "Значение функции:  f(x) = " << func(x) << endl;
+    cout << "Значение f'(x):    " << dfunc(x) << endl;
+    cout << "Значение f''(x):   " << d2func(x) << endl;
+    cout << "=================================" << endl;
+
+    return x;
+}
+
+int main() {
+    setlocale(LC_ALL, "rus");
+    double x0 = 0.5;    // Начальное приближение
+    double epsilon = 0.01; // Точность
+    int max_iterations = 100; // Максимальное число итераций
+
+   
+
+    double minimum = newton_method(x0, epsilon, max_iterations);
+
+    if (!isnan(minimum)) {
+        cout << "Минимум найден успешно!" << endl;
+    }
+    else {
+        cout << "Поиск минимума не удался" << endl;
+    }
+
+    return 0;
+}
