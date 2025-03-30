@@ -1,0 +1,78 @@
+#include <iostream>
+#include <cmath>
+#include <iomanip>
+
+using namespace std;
+
+int function_calls = 0;
+const double phi = (1 + sqrt(5)) / 2;  // Золотое сечение ~1.618
+
+double func(double x) {
+    function_calls++;
+    return (1 - x * x) * (pow(x, 3) - 1);
+}
+
+double golden_section_method(double a, double b, double epsilon) {
+    double x1 = b - (b - a) / phi;
+    double x2 = a + (b - a) / phi;
+    double f1 = func(x1);
+    double f2 = func(x2);
+    int iterations = 0;
+    function_calls = 0;
+
+    cout << "\nПоиск минимума функции f(x) = (1-x^2)(x^3-1)" << endl;
+    cout << "Метод золотого сечения" << endl;
+    cout << "---------------------------------" << endl;
+    cout << "=== Параметры поиска ===" << endl;
+    cout << "Интервал:          [" << fixed << setprecision(4) << a << ", " << b << "]" << endl;
+    cout << "Точность:           e = " << epsilon << endl;
+    cout << "---------------------------------" << endl;
+
+    while ((b - a) > epsilon) {
+        iterations++;
+
+        cout << "Итерация " << iterations << ":" << endl;
+        cout << "  Текущий интервал: [" << setw(8) << a << ", " << setw(8) << b << "]" << endl;
+        cout << "  Точки сравнения:  x1 = " << setw(8) << x1 << ", x2 = " << setw(8) << x2 << endl;
+        cout << "  Значения функции: f(x1) = " << setw(8) << f1 << ", f(x2) = " << setw(8) << f2 << endl;
+
+        if (f1 < f2) {
+            b = x2;
+            x2 = x1;
+            f2 = f1;
+            x1 = b - (b - a) / phi;
+            f1 = func(x1);
+        }
+        else {
+            a = x1;
+            x1 = x2;
+            f1 = f2;
+            x2 = a + (b - a) / phi;
+            f2 = func(x2);
+        }
+
+        cout << "  Новый интервал:   [" << setw(8) << a << ", " << setw(8) << b << "]" << endl;
+        cout << "  Текущая длина:    " << setw(8) << (b - a) << endl;
+        cout << "  -------------------------------" << endl;
+    }
+
+    double minimum = (a + b) / 2;
+    cout << "\n=== Результаты ===" << endl;
+    cout << "Всего итераций:     " << iterations << endl;
+    cout << "Вызовов функции:    " << function_calls << endl;
+    cout << "Найденный минимум:  x = " << minimum << endl;
+    cout << "Значение функции:  f(x) = " << func(minimum) << endl;
+    cout << "=================================" << endl;
+
+    return minimum;
+}
+
+int main() {
+    setlocale(LC_ALL, "rus");
+    double a = -0.5, b = 1.0;
+    double epsilon = 0.01;
+
+    double minimum = golden_section_method(a, b, epsilon);
+
+    return 0;
+}
