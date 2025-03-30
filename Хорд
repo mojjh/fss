@@ -1,0 +1,89 @@
+#include <iostream>
+#include <cmath>
+#include <iomanip>
+
+using namespace std;
+
+int function_calls = 0;
+
+// Исходная функция
+double func(double x) {
+    function_calls++;
+    return (1 - x * x) * (pow(x, 3) - 1);
+}
+
+// Производная функции
+double dfunc(double x) {
+    function_calls++;
+    return -2 * x * (pow(x, 3) - 1) + (1 - x * x) * (3 * x * x);
+}
+
+double chord_method(double a, double b, double epsilon, int max_iterations) {
+    double x = a;
+    int iterations = 0;
+    function_calls = 0;
+
+    cout << "\nПоиск минимума функции f(x) = (1-x^2)(x^3-1)" << endl;
+    cout << "Метод хорд" << endl;
+    cout << "---------------------------------" << endl;
+    cout << "=== Параметры поиска ===" << endl;
+    cout << "Интервал:          [" << fixed << setprecision(4) << a << ", " << b << "]" << endl;
+    cout << "Точность:           e = " << epsilon << endl;
+    cout << "Макс. итераций:     " << max_iterations << endl;
+    cout << "---------------------------------" << endl;
+
+    // Проверка условий применимости метода
+    if (dfunc(a) * dfunc(b) >= 0) {
+        cout << "Метод хорд не применим: производные на концах интервала должны иметь разные знаки." << endl;
+        if (func(a) < func(b)) {
+            cout << "Минимум на левой границе интервала: x = " << a << ", f(x) = " << func(a) << endl;
+            return a;
+        }
+        else {
+            cout << "Минимум на правой границе интервала: x = " << b << ", f(x) = " << func(b) << endl;
+            return b;
+        }
+    }
+
+    while (fabs(b - a) > epsilon && iterations < max_iterations) {
+        iterations++;
+        x = a - dfunc(a) * (b - a) / (dfunc(b) - dfunc(a));
+
+        cout << "Итерация " << iterations << ":" << endl;
+        cout << "  Текущий интервал: [" << setw(8) << a << ", " << setw(8) << b << "]" << endl;
+        cout << "  Новая точка:      x = " << setw(8) << x << endl;
+        cout << "  Производная:     f'(x) = " << setw(8) << dfunc(x) << endl;
+        cout << "  -------------------------------" << endl;
+
+        if (fabs(dfunc(x)) < epsilon) {
+            break;
+        }
+
+        if (dfunc(x) > 0) {
+            b = x;
+        }
+        else {
+            a = x;
+        }
+    }
+
+    cout << "\n=== Результаты ===" << endl;
+    cout << "Всего итераций:     " << iterations << endl;
+    cout << "Вызовов функции:    " << function_calls << endl;
+    cout << "Найденный минимум:  x = " << x << endl;
+    cout << "Значение функции:  f(x) = " << func(x) << endl;
+    cout << "=================================" << endl;
+
+    return x;
+}
+
+int main() {
+    setlocale(LC_ALL, "rus");
+    double a = -1, b = 0.5;
+    double epsilon = 0.01;
+    int max_iterations = 200;
+
+    double minimum = chord_method(a, b, epsilon, max_iterations);
+
+    return 0;
+}
