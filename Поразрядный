@@ -1,0 +1,73 @@
+#include <iostream>
+#include <cmath>
+#include <iomanip>
+
+using namespace std;
+
+int function_calls = 0;
+
+double func(double x) {
+    function_calls++;
+    return (1 - x * x) * (pow(x, 3) - 1);
+}
+
+double uniform_search(double a, double b, double epsilon, int max_iterations) {
+    double h = (b - a) / 4;
+    double x0 = a;
+    double x1 = x0 + h;
+    int iterations = 0;
+    function_calls = 0;
+
+    cout << "=== Параметры поиска ===" << endl;
+    cout << "Интервал:          [" << a << ", " << b << "]" << endl;
+    cout << "Начальная точка:    x0 = " << fixed << setprecision(4) << x0 << endl;
+    cout << "Начальный шаг:      h = " << h << endl;
+    cout << "Точность:           e = " << epsilon << endl;
+    cout << "Макс. итераций:     " << max_iterations << endl;
+    cout << "---------------------------------" << endl;
+
+    while (fabs(h) > epsilon && iterations < max_iterations) {
+        iterations++;
+
+        if (x1 > b) x1 = b;
+
+        cout << "Итерация " << iterations << ":" << endl;
+        cout << "  Текущая точка: x0 = " << setw(8) << x0 << "  f(x0) = " << setw(8) << func(x0) << endl;
+        cout << "  След. точка:   x1 = " << setw(8) << x1 << "  f(x1) = " << setw(8) << func(x1) << endl;
+        cout << "  Текущий шаг:   h = " << setw(8) << h << endl;
+        cout << "  -------------------------------" << endl;
+
+        if (func(x0) > func(x1)) {
+            x0 = x1;
+            x1 = x0 + h;
+        }
+        else {
+            h /= 4;
+            x1 = x0 - h;
+        }
+    }
+
+    cout << "\n=== Результаты ===" << endl;
+    cout << "Всего итераций:     " << iterations << endl;
+    cout << "Вызовов функции:    " << function_calls << endl;
+    cout << "Найденный минимум:  x = " << x0 << endl;
+    cout << "Значение функции:  f(x) = " << func(x0) << endl;
+    cout << "=================================" << endl;
+
+    return x0;
+}
+
+int main() {
+    setlocale(LC_ALL, "rus");
+    double a = -0.5, b = 1;
+    double epsilon = 0.01;
+    int max_iterations = 100;
+
+    cout << "\nПоиск минимума функции f(x) = (1-x^2)(x^3-1)" << endl;
+    cout << "Метод поразрядного поиска" << endl;
+    cout << "---------------------------------" << endl;
+
+    double minimum = uniform_search(a, b, epsilon, max_iterations);
+
+    return 0;
+}
