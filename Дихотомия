@@ -1,0 +1,71 @@
+#include <iostream>
+#include <cmath>
+#include <iomanip>
+
+using namespace std;
+
+int function_calls = 0;
+
+double func(double x) {
+    function_calls++;
+    return (1 - x * x) * (pow(x, 3) - 1);
+}
+
+double dichotomy_method(double a, double b, double epsilon, double delta) {
+    double x1, x2;
+    int iterations = 0;
+    function_calls = 0;
+
+    cout << "=== Параметры поиска ===" << endl;
+    cout << "Интервал:          [" << a << ", " << b << "]" << endl;
+    cout << "Начальная точка:    a = " << fixed << setprecision(4) << a << endl;
+    cout << "Точность:           e = " << epsilon << endl;
+    cout << "Дельта:             d = " << delta << endl;
+    cout << "---------------------------------" << endl;
+
+    while ((b - a) / 2 > epsilon) {
+        iterations++;
+        x1 = (a + b) / 2 - delta;
+        x2 = (a + b) / 2 + delta;
+
+        cout << "Итерация " << iterations << ":" << endl;
+        cout << "  Текущий интервал: [" << setw(8) << a << ", " << setw(8) << b << "]" << endl;
+        cout << "  Точки сравнения:  x1 = " << setw(8) << x1 << ", x2 = " << setw(8) << x2 << endl;
+        cout << "  Значения функции: f(x1) = " << setw(8) << func(x1) << ", f(x2) = " << setw(8) << func(x2) << endl;
+
+        if (func(x1) < func(x2)) {
+            b = x2;
+        }
+        else {
+            a = x1;
+        }
+
+        cout << "  Новый интервал:   [" << setw(8) << a << ", " << setw(8) << b << "]" << endl;
+        cout << "  Текущая длина:    " << setw(8) << (b - a) << endl;
+        cout << "  -------------------------------" << endl;
+    }
+
+    cout << "\n=== Результаты ===" << endl;
+    cout << "Всего итераций:     " << iterations << endl;
+    cout << "Вызовов функции:    " << function_calls << endl;
+    cout << "Найденный минимум:  x = " << (a + b) / 2 << endl;
+    cout << "Значение функции:  f(x) = " << func((a + b) / 2) << endl;
+    cout << "=================================" << endl;
+
+    return (a + b) / 2;
+}
+
+int main() {
+    setlocale(LC_ALL, "rus");
+    double a = -0.5, b = 1.0;
+    double epsilon = 0.01;
+    double delta = 1e-7;
+
+    cout << "\nПоиск минимума функции f(x) = (1-x^2)(x^3-1)" << endl;
+    cout << "Метод дихотомии" << endl;
+    cout << "---------------------------------" << endl;
+
+    double minimum = dichotomy_method(a, b, epsilon, delta);
+
+    return 0;
+}
