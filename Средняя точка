@@ -1,0 +1,66 @@
+#include <iostream>
+#include <cmath>
+#include <iomanip>
+
+using namespace std;
+
+int function_calls = 0;
+
+// Функция, которую минимизируем: f(x) = (1 - x^2)(x^3 - 1)
+double func(double x) {
+    function_calls++;
+    return (1 - x * x) * (pow(x, 3) - 1);
+}
+
+// Производная функции: f'(x) = -2x(x^3 - 1) + (1 - x^2)(3x^2)
+double dfunc(double x) {
+    function_calls++;
+    return -2 * x * (pow(x, 3) - 1) + (1 - x * x) * (3 * pow(x, 2));
+}
+
+double midpoint_method(double a, double b, double epsilon, int max_iterations) {
+    double xc;
+    int iterations = 0;
+    function_calls = 0;
+
+    cout << "Начальные параметры:" << endl;
+    cout << "Интервал: [" << a << ", " << b << "]" << endl;
+    cout << "Точность (epsilon): " << epsilon << endl;
+    cout << "Максимальное количество итераций: " << max_iterations << endl;
+    cout << "----------------------------------------" << endl;
+
+    while ((b - a) > epsilon && iterations < max_iterations) {
+        iterations++;
+        xc = (a + b) / 2;
+
+        cout << "Итерация " << iterations << ":" << endl;
+        cout << "Текущий интервал: [" << a << ", " << b << "]" << endl;
+        cout << "Середина интервала (xc): " << fixed << setprecision(6) << xc << endl;
+        cout << "Производная в xc (f'(xc)): " << dfunc(xc) << endl;
+        cout << "----------------------------------------" << endl;
+
+        if (dfunc(xc) > 0) {
+            b = xc;
+        }
+        else {
+            a = xc;
+        }
+    }
+
+    cout << "Количество итераций: " << iterations << endl;
+    cout << "Количество обращений к функции: " << function_calls << endl;
+    double minimum_point = (a + b) / 2;
+    cout << "Найденный минимум: x = " << minimum_point << ", f(x) = " << func(minimum_point) << endl;
+
+    return minimum_point;
+}
+
+int main() {
+    setlocale(LC_ALL, "rus");
+    double a = -1, b = 1.0;
+    double epsilon = 0.001;
+    int max_iterations = 100;
+    double minimum = midpoint_method(a, b, epsilon, max_iterations);
+
+    return 0;
+}
